@@ -16,6 +16,9 @@ const app = express();
 // connecting to db
 connectDB();
 
+// body parser
+app.use(express.json());
+
 app.use('/api/v1/posts', posts);
 
 // custom error handling middlware
