@@ -5,6 +5,7 @@ const PostSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    image: String,
     tags: [String],
     createdAt: {
         type: Date,

@@ -4,6 +4,8 @@ const colors = require('colors');
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
+const fileUpload = require('express-fileupload');
+
 
 //routes
 const posts = require('./routes/post');
@@ -18,6 +20,9 @@ connectDB();
 
 // body parser
 app.use(express.json());
+
+// express file upload
+app.use(fileUpload());
 
 app.use('/api/v1/posts', posts);
 
