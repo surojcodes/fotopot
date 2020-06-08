@@ -9,6 +9,8 @@ const fileUpload = require('express-fileupload');
 
 //routes
 const posts = require('./routes/post');
+const auth = require('./routes/auth');
+
 
 // configure to use env variables
 dotenv.config({ path: './config/config.env' });
@@ -24,7 +26,10 @@ app.use(express.json());
 // express file upload
 app.use(fileUpload());
 
+// mounting routes
 app.use('/api/v1/posts', posts);
+app.use('/api/v1/auth', auth);
+
 
 // custom error handling middlware
 app.use(errorHandler);
