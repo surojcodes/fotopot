@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('../models/User');
 
 const PostSchema = new mongoose.Schema({
     caption: {
@@ -7,6 +8,11 @@ const PostSchema = new mongoose.Schema({
     },
     image: String,
     tags: [String],
+    user: {
+        type: mongoose.Schema.ObjectId,
+        ref: User,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
@@ -10,7 +11,6 @@ const fileUpload = require('express-fileupload');
 //routes
 const posts = require('./routes/post');
 const auth = require('./routes/auth');
-
 
 // configure to use env variables
 dotenv.config({ path: './config/config.env' });
@@ -29,6 +29,9 @@ app.use(fileUpload());
 // mounting routes
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/auth', auth);
+
+// cookie parser
+app.use(cookieParser());
 
 
 // custom error handling middlware

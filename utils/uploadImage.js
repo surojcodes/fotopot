@@ -1,12 +1,19 @@
 const mongoose = require('mongoose');
 const ErrorResponse = require('./ErrorResponse');
 const path = require('path');
+const User = require('../models/User')
 
 const uploadImage =
     async (model, req, res, next, upload_path, limit) => {
-        let resource = await model.findById(req.params.id);
+        let id = '';
+        if (model === User) {
+            id = req.user.id;
+        } else {
+            id = req.params.id
+        }
+        const resource = await model.findById(id);
         if (!resource) {
-            return next(new ErrorResponse(`Resource with id ${req.params.id} not found.`, 404));
+            return next(new ErrorResponse(`Resource with id ${id} not found.`, 404));
         }
         // check if image is uploaded
         if (!req.files)
@@ -30,7 +37,7 @@ const uploadImage =
                 return next(new ErrorResponse(`Internal Server Error in image uploading`, 500));
             }
             // store imageName in db
-            await model.findByIdAndUpdate(req.params.id, { image: nameToStore });
+            await model.findByIdAndUpdate(id, { image: nameToStore });
             res.status(200).json({
                 success: true,
                 data: nameToStore

@@ -3,6 +3,7 @@ const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/ErrorResponse');
 const uploadImage = require('../utils/uploadImage');
 const Post = require('../models/Post');
+const User = require('../models/User');
 const path = require('path');
 
 // USE : To get all the posts
@@ -30,6 +31,9 @@ exports.getPost = asyncHandler(
 // ROUTE: POST /api/v1/posts
 exports.createPost = asyncHandler(
     async (req, res, next) => {
+        //associate the post with logged in user
+        req.body.user = req.user.id;
+        // create the post
         const post = await Post.create(req.body);
         res.status(201).json({ success: true, data: post });
     }
@@ -43,6 +47,12 @@ exports.updatePost = asyncHandler(
         if (!post) {
             return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 404));
         }
+
+
+        //check if the post belongs to logged in user
+        if (post.user.toString() !== req.user.id)
+            return next(new ErrorResponse(`Not allowed to update this post.`, 401));
+
         const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
@@ -59,6 +69,10 @@ exports.deletePost = asyncHandler(
         if (!post) {
             return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 404));
         }
+        //check if the post belongs to logged in user
+        if (post.user.toString() !== req.user.id)
+            return next(new ErrorResponse(`Not allowed to delete this post.`, 401));
+
         post.remove();
         res.status(200).json({ success: true, data: {} });
     }
@@ -69,6 +83,13 @@ exports.deletePost = asyncHandler(
 // ROUTE: PUT /api/v1/posts/:id/image
 exports.uploadImage = asyncHandler(
     async (req, res, next) => {
+        const post = await Post.findById(req.params.id);
+        if (!post)
+            return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 401));
+        //check if the post belongs to logged in user
+        if (post.user.toString() !== req.user.id)
+            return next(new ErrorResponse(`Not allowed to upload image for this post.`, 401));
+
         uploadImage(Post, req, res, next, process.env.POST_UPLOAD_PATH, process.env.POST_UPLOAD_LIMIT);
     }
 );
