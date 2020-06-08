@@ -10,7 +10,10 @@ const path = require('path');
 // ROUTE: GET /api/v1/posts
 exports.getPosts = asyncHandler(
     async (req, res, next) => {
-        const posts = await Post.find();
+        const posts = await Post.find().populate({
+            path: 'user',
+            select: 'name'
+        });
         res.status(200).json({ success: true, count: posts.length, data: posts })
     }
 );
@@ -92,5 +95,25 @@ exports.uploadImage = asyncHandler(
             return next(new ErrorResponse(`Not allowed to upload image for this post.`, 401));
 
         uploadImage(Post, req, res, next, process.env.POST_UPLOAD_PATH, process.env.POST_UPLOAD_LIMIT);
+    }
+);
+
+// USE : To like a post
+// ROUTE: PUT /api/v1/posts/:id/like
+exports.likePost = asyncHandler(
+    async (req, res, next) => {
+        const post = await Post.findById(req.params.id);
+        if (!post)
+            return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 401));
+
+        const updatedPost = await Post.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user.id } }, {
+            new: true,
+            runValidators: true
+        }
+        )
+        res.status(200).json({
+            success: true,
+            data: updatedPost
+        })
     }
 );
