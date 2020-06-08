@@ -10,11 +10,7 @@ const path = require('path');
 // ROUTE: GET /api/v1/posts
 exports.getPosts = asyncHandler(
     async (req, res, next) => {
-        const posts = await Post.find().populate({
-            path: 'user',
-            select: 'name'
-        });
-        res.status(200).json({ success: true, count: posts.length, data: posts })
+        res.status(200).json(res.advancedResults);
     }
 );
 
