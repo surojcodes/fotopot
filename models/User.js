@@ -27,7 +27,6 @@ const UserSchema = new mongoose.Schema({
     image: String,
     role: {
         type: String,
-        enum: ['publisher', 'admin'],
         default: 'publisher'
     },
     resetPasswordToken: String,

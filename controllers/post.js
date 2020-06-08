@@ -70,7 +70,8 @@ exports.deletePost = asyncHandler(
             return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 404));
         }
         //check if the post belongs to logged in user
-        if (post.user.toString() !== req.user.id)
+        //Admin can delete any post (e.g if the post doesnot follow the rules)
+        if (post.user.toString() !== req.user.id && req.user.role !== 'admin')
             return next(new ErrorResponse(`Not allowed to delete this post.`, 401));
 
         post.remove();
