@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/ErrorResponse');
 const uploadImage = require('../utils/uploadImage');
+
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Comment = require('../models/Comment');
+
 const path = require('path');
 
 // USE : To get all the posts
@@ -18,11 +21,20 @@ exports.getPosts = asyncHandler(
 // ROUTE: GET /api/v1/posts/:id
 exports.getPost = asyncHandler(
     async (req, res, next) => {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.findById(req.params.id).populate({
+            path: 'user',
+            select: 'name'
+        });
         if (!post) {
             return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 404));
         }
-        res.status(200).json({ success: true, data: post });
+        // also the comments
+        const comments = await Comment.find({ post: req.params.id }).populate({
+            path: 'user',
+            select: 'name'
+        });
+
+        res.status(200).json({ success: true, data: post, comments });
     }
 );
 
@@ -47,7 +59,6 @@ exports.updatePost = asyncHandler(
             return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 404));
         }
 
-
         //check if the post belongs to logged in user
         if (post.user.toString() !== req.user.id)
             return next(new ErrorResponse(`Not allowed to update this post.`, 401));
@@ -56,7 +67,11 @@ exports.updatePost = asyncHandler(
             new: true,
             runValidators: true
         });
-        res.status(200).json({ success: true, data: updatedPost });
+        const comments = await Comment.find({ post: req.params.id }).populate({
+            path: 'user',
+            select: 'name'
+        });
+        res.status(200).json({ success: true, data: updatedPost, comments });
     }
 );
 
@@ -110,6 +125,67 @@ exports.likePost = asyncHandler(
         res.status(200).json({
             success: true,
             data: updatedPost
+        })
+    }
+);
+
+// USE : To add a comment 
+// ROUTE: POST /api/v1/posts/:id/comment
+// ACCESS : Protected (publisher and admin)
+exports.addComment = asyncHandler(
+    async (req, res, next) => {
+        req.body.user = req.user.id;
+        req.body.post = req.params.id;
+        const comment = await Comment.create(req.body);
+        res.status(200).json({
+            success: true,
+            data: comment
+        })
+    }
+);
+
+
+// USE : Get comments for a post 
+// ROUTE: GET /api/v1/posts/:id/comment
+// ACCESS : Protected (publisher and admin)
+exports.viewComments = asyncHandler(
+    async (req, res, next) => {
+        let query = Comment.find({ post: req.params.id }).sort('-createdAt');
+        const page = parseInt(req.query.page, 10) || 1; //how many pages
+        const limit = parseInt(req.query.limit, 10) || 25;     //no of records in each page , by defualt 25
+        const startIndex = (page - 1) * limit;
+        const endIndex = (page * limit);
+        const total = await Comment.countDocuments({ post: req.params.id });
+
+        query = query.skip(startIndex).limit(limit).populate({
+            path: 'user',
+            select: 'name'
+        }).populate({
+            path: 'post',
+            select: 'caption'
+        });
+
+        const comments = await query;
+
+        const pagination = {};
+        if (endIndex < total) {
+            pagination.next = {
+                page: page + 1,
+                limit
+            }
+        }
+        if (startIndex > 0) {
+            pagination.prev = {
+                page: page - 1,
+                limit
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            count: comments.length,
+            pagination,
+            data: comments
         })
     }
 );

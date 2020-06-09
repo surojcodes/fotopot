@@ -12,7 +12,7 @@ const fileUpload = require('express-fileupload');
 const posts = require('./routes/post');
 const auth = require('./routes/auth');
 const users = require('./routes/user');
-
+const comments = require('./routes/comment');
 
 // configure to use env variables
 dotenv.config({ path: './config/config.env' });
@@ -32,11 +32,10 @@ app.use(fileUpload());
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
-
+app.use('/api/v1/comments', comments);
 
 // cookie parser
 app.use(cookieParser());
-
 
 // custom error handling middlware
 app.use(errorHandler);
