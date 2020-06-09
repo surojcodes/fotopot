@@ -61,7 +61,13 @@ exports.uploadProfilePic = asyncHandler(
 //ACCESS : Protected
 exports.getMe = asyncHandler(
     async (req, res, next) => {
-        const user = await User.findById(req.user.id);
+        if (!req.user)
+            return next(new ErrorResponse(`No one is logged in!`, 404));
+
+        const user = await User.findById(req.user.id).populate({
+            path: 'posts',
+            select: 'caption'
+        });
         res.status(200).json({
             success: true,
             data: user
@@ -69,6 +75,7 @@ exports.getMe = asyncHandler(
     }
 );
 
+//USE : To generate JWT and set cookie
 const sendTokenResponse = (user, statusCode, res) => {
     //get the signed token from user model method
     const token = user.getSingedJWTToken();

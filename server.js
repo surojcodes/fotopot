@@ -11,6 +11,8 @@ const fileUpload = require('express-fileupload');
 //routes
 const posts = require('./routes/post');
 const auth = require('./routes/auth');
+const users = require('./routes/user');
+
 
 // configure to use env variables
 dotenv.config({ path: './config/config.env' });
@@ -29,6 +31,8 @@ app.use(fileUpload());
 // mounting routes
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
+
 
 // cookie parser
 app.use(cookieParser());

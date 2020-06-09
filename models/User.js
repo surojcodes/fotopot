@@ -35,6 +35,9 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 });
 
 // encrypt pwd using bcrypt
@@ -55,5 +58,13 @@ UserSchema.methods.getSingedJWTToken = function (user, statusCode, res) {
 UserSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 }
+
+// generate virtual field (reverse populate)
+UserSchema.virtual('posts', {
+    ref: 'Post',
+    localField: '_id',
+    foreignField: 'user',
+    justOne: false
+})
 
 module.exports = mongoose.model('User', UserSchema)
