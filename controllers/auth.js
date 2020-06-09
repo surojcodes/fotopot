@@ -11,6 +11,8 @@ const crypto = require('crypto');
 exports.register = asyncHandler(
     async (req, res, next) => {
         const user = await User.create(req.body);
+        //SEND VERIFICATION EMAIL
+        sendVerificationEmail(req, user);
         sendTokenResponse(user, 200, res);
     }
 );
@@ -162,3 +164,98 @@ exports.resetPassword = asyncHandler(
         sendTokenResponse(user, 200, res);
     }
 );
+
+
+//USE : To verify account
+//ROUTE : PUT /api/v1/auth/verify-account/:verifyToken
+exports.verifyAccount = asyncHandler(
+    async (req, res, next) => {
+
+        // hash the received token
+        const accountVerificationToken = crypto.createHash('sha256').update(req.params.verifyToken).digest('hex');
+
+        // find user
+        const user = await User.findOne({ accountVerificationToken, accountVerificationExpire: { $gt: Date.now() } });
+        if (!user) {
+            return next(new ErrorResponse(`Invalid Token.`, 400));
+        }
+
+        // set new password
+        user.role = 'publisher';
+
+        // remove the reset token fields
+        user.accountVerificationToken = undefined;
+        user.accountVerificationExpire = undefined;
+
+        // save the user
+        await user.save();
+
+        // write a message
+        const message = `Congratulation, your fotopot account has been activated. You can now post images, follow publishers, like content and comment on them`
+
+        // send account sucesfully verified Mail
+        try {
+            await sendMail({
+                email: user.email,
+                subject: 'Fotopot Account Verification Successful',
+                message
+            });
+        } catch (error) {
+            // console.log(error);
+            return next(new ErrorResponse(`Email could not be sent`, 500));
+        }
+
+        //log in the user
+        sendTokenResponse(user, 200, res);
+    }
+);
+
+//USE : To request resend of verify token
+//ROUTE : PUT /api/v1/auth/resend-verification-email
+//ACCESS: protected
+exports.resendVerification = asyncHandler(
+    async (req, res, next) => {
+
+        const user = await User.findById(req.user.id);
+        // console.log(user);
+        if (!user) {
+            return next(new ErrorResponse(`Please log in to continue`, 401));
+        }
+        if (user.role === 'publisher' || user.role === 'admin') {
+            return next(new ErrorResponse(`You are already verified`, 400));
+        }
+        sendVerificationEmail(req, user);
+        //log in the user
+        sendTokenResponse(user, 200, res);
+    }
+);
+
+// Send verification email
+const sendVerificationEmail = async (req, user) => {
+
+    // get the token
+    const verifyToken = user.getAccountVerificationToken();
+    await user.save({ validateBeforeSave: false });
+
+    //create verification url
+    const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/verify-account/${verifyToken}`
+
+    // write a message
+    const message = `You are receiving this email because you signed up with fotopot. 
+        For posting images,follow publishers, liking posts and comments, please verify your account by making a PUT request to ${verifyUrl}`
+
+    // send Mail
+    try {
+        await sendMail({
+            email: user.email,
+            subject: 'Fotopot Account Verification',
+            message
+        });
+    } catch (error) {
+        // console.log(error);
+        user.accountVerificationToken = undefined;
+        user.accountVerificationExpire = undefined;
+        await user.save({ validateBeforeSave: false });
+        return next(new ErrorResponse(`Email could not be sent`, 500));
+    }
+}

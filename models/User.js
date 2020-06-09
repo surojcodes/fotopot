@@ -28,8 +28,11 @@ const UserSchema = new mongoose.Schema({
     image: String,
     role: {
         type: String,
-        default: 'publisher'
+        enum: ['unverified', 'publisher'],
+        default: 'unverified'
     },
+    accountVerificationToken: String,
+    accountVerificationExpire: Date,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt: {
@@ -62,6 +65,8 @@ UserSchema.methods.getSingedJWTToken = function (user, statusCode, res) {
 UserSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 }
+
+//token for forget password
 UserSchema.methods.getResetPasswordToken = function () {
     // generate random token
     const resetToken = crypto.randomBytes(20).toString('hex');
@@ -73,6 +78,20 @@ UserSchema.methods.getResetPasswordToken = function () {
     this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
     return resetToken;
+}
+
+// token for account verification
+UserSchema.methods.getAccountVerificationToken = function () {
+    // generate random token
+    const verifyToken = crypto.randomBytes(20).toString('hex');
+
+    // hash the token and save in the document
+    this.accountVerificationToken = crypto.createHash('sha256').update(verifyToken).digest('hex');
+
+    // set the reset token expire time to 10 mins
+    this.accountVerificationExpire = Date.now() + 10 * 60 * 1000;
+
+    return verifyToken;
 }
 
 // generate virtual field (reverse populate)
