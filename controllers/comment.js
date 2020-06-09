@@ -48,3 +48,22 @@ exports.deleteComment = asyncHandler(
         })
     }
 );
+
+// USE : To like a comment
+// ROUTE: PUT /api/v1/comments/:id/like
+// ACCESS : Protected (publisher and admin)
+exports.likeComment = asyncHandler(
+    async (req, res, next) => {
+        const comment = await Comment.findById(req.params.id);
+        if (!comment)
+            return next(new ErrorResponse(`Comment with id ${req.params.id} not found.`, 404));
+        const updatedComment = await Comment.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user.id } }, {
+            new: true,
+            runValidators: true
+        });
+        res.status(200).json({
+            success: true,
+            data: updatedComment
+        })
+    }
+);
