@@ -84,7 +84,9 @@ node seeder -d
 
 ***
 ## Demo
-Simple Documentation [here]()
-Extensive Documentation with example [here]()
+Simple Documentation with example[here](https://surojmaharjan0.github.io/fotopot/)
+Postman Documentation with example [here](https://documenter.getpostman.com/view/7716156/SzzegfAC)
 * Version **1.0**
 * Author **Suroj Maharjan**
+
+*If you find any bugs please let me know :)*
