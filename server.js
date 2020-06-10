@@ -7,6 +7,12 @@ const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
 const fileUpload = require('express-fileupload');
 
+// security
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
 
 //routes
 const posts = require('./routes/post');
@@ -36,6 +42,34 @@ app.use('/api/v1/comments', comments);
 
 // cookie parser
 app.use(cookieParser());
+
+// for file upload
+app.use(fileupload());
+
+// sanitize data
+app.use(mongoSanitize());
+
+//set security headers
+app.use(helmet());
+
+// prevnt XSS attacks
+app.use(xss());
+
+// rate limiting
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000,     // 10 mins
+    max: 100
+});
+app.use(limiter);
+
+//prevent HTTP param polution
+app.use(hpp());
+
+//Enable cors
+app.use(cors());
+
+// set static folder for images
+app.use(express.static(path.join(__dirname, 'public')));
 
 // custom error handling middlware
 app.use(errorHandler);
