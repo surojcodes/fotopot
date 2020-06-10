@@ -8,3 +8,4 @@
 * Reset Password via email
 * Json Web Token (JWT) authentication
 * Cookie Storage
+* Proper Authorization for several tasks

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const fs = require('fs');
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -93,6 +94,25 @@ UserSchema.methods.getAccountVerificationToken = function () {
 
     return verifyToken;
 }
+
+// // delete posts and their comments when user is deleted (also delete the image)
+UserSchema.pre('remove', async function (next) {
+
+    const posts = await this.model('Post').find({ user: this._id });
+    posts.forEach(post => {
+        post.remove();
+    })
+
+    const profile_image = this.image;
+    if (profile_image) {
+        fs.unlink(`../public/profilePics/${profile_image}`, err => {
+            if (err) {
+                console.log(err);
+            }
+        })
+    }
+    next();
+});
 
 // generate virtual field (reverse populate)
 UserSchema.virtual('posts', {

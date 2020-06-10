@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fs = require('fs');
 const User = require('../models/User');
 
 const PostSchema = new mongoose.Schema({
@@ -26,6 +27,14 @@ const PostSchema = new mongoose.Schema({
 // delete comments when post is deleted (also delete the image)
 PostSchema.pre('remove', async function (next) {
     await this.model('Comment').deleteMany({ post: this._id });
+    const post_image = this.image;
+    if (post_image) {
+        fs.unlink(`${__dirname}/../public/userPosts/${post_image}`, err => {
+            if (err) {
+                console.log(err);
+            }
+        })
+    }
     next();
 });
 

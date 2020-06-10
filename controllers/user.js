@@ -74,6 +74,13 @@ exports.deleteUser = asyncHandler(
             return next(new ErrorResponse(`Not authorized to update this user detail.`, 401));
         }
         user.remove();
+
+        //clear cookie
+        res.cookie('token', 'none', {
+            expires: new Date(Date.now() + 10 * 1000),
+            httpOnly: true
+        });
+
         res.status(200).json({
             success: true,
             data: {}
