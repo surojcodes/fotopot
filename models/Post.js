@@ -23,4 +23,10 @@ const PostSchema = new mongoose.Schema({
     }
 });
 
+// delete comments when post is deleted (also delete the image)
+PostSchema.pre('remove', async function (next) {
+    await this.model('Comment').deleteMany({ post: this._id });
+    next();
+});
+
 module.exports = mongoose.model('Post', PostSchema);
