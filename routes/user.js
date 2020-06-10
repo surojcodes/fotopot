@@ -6,6 +6,6 @@ const User = require('../models/User');
 const router = express.Router();
 
 router.route('/').get(protect, authorize('admin'), advancedResults(User, { path: 'posts', select: 'caption' }), getUsers);
-router.route('/:id').get(protect, authorize('admin'), getUser).put(protect, updateUser).delete(protect, deleteUser);
+router.route('/:id').get(protect, getUser).put(protect, updateUser).delete(protect, deleteUser);
 
 module.exports = router;

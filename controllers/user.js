@@ -40,7 +40,7 @@ exports.updateUser = asyncHandler(
             return next(new ErrorResponse(`User with ID ${req.params.id} does not exist.`, 404));
 
         //check if the  logged in user is account owner or admin
-        if (req.user.id !== user._id.toString() && req.user.role !== 'admin') {
+        if (req.user.id !== user._id.toString()) {
             return next(new ErrorResponse(`Not authorized to update this user detail.`, 401));
         }
         // check if update is trying to change the role which is not permitted
