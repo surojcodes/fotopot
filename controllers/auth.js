@@ -191,7 +191,7 @@ exports.verifyAccount = asyncHandler(
         await user.save();
 
         // write a message
-        const message = `Congratulation, your fotopot account has been activated. You can now post images, follow publishers, like content and comment on them`
+        const message = `Congratulation, your fotopot account has been activated. You can now post images, like content and comment on them`
 
         // send account sucesfully verified Mail
         try {
@@ -242,7 +242,7 @@ const sendVerificationEmail = async (req, user) => {
 
     // write a message
     const message = `You are receiving this email because you signed up with fotopot. 
-        For posting images,follow publishers, liking posts and comments, please verify your account by making a PUT request to ${verifyUrl}`
+        For posting images,liking posts and comments, please verify your account by making a PUT request to ${verifyUrl}`
 
     // send Mail
     try {

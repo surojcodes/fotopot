@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateComment, deleteComment, likeComment } = require('../controllers/comment');
+const { updateComment, deleteComment, likeUnlikeComment } = require('../controllers/comment');
 
 const { protect, authorize } = require('../middleware/auth');
 
@@ -9,6 +9,7 @@ const Comment = require('../models/Comment');
 const router = express.Router();
 
 router.route('/:id').put(protect, authorize('admin', 'publisher'), updateComment).delete(protect, authorize('admin', 'publisher'), deleteComment);
-router.route('/:id/like').put(protect, authorize('admin', 'publisher'), likeComment);
+router.route('/:id/like').put(protect, authorize('admin', 'publisher'), likeUnlikeComment);
+router.route('/:id/unlike').put(protect, authorize('admin', 'publisher'), likeUnlikeComment);
 
 module.exports = router;

@@ -1,0 +1,77 @@
+[
+    {
+        "_id": "5ee05a45c5106d01f80d8e6d",
+        "caption": "Beautiful sunset",
+        "tags": [
+            "sunset",
+            "nature",
+            "sun",
+            "calming"
+        ],
+        "user": "5ee04a3f36836502ba8415f8"
+    },
+    {
+        "_id": "5ee05aad4fd11f0229d0e0cf",
+        "caption": "sunset from my window",
+        "tags": [
+            "tranquil",
+            "nature",
+            "sunset",
+            "colorful"
+        ],
+        "user": "5ee04a3f36836502ba8415f8"
+    },
+    {
+        "_id": "5ee05dac665eb803beba5414",
+        "caption": "happy holii.....",
+        "tags": [
+            "colors",
+            "holi",
+            "festival",
+            "happy"
+        ],
+        "user": "5ee04a3f36836502ba8415f9"
+    },
+    {
+        "_id": "5ee05ddb665eb803beba5415",
+        "caption": "trek of the year",
+        "tags": [
+            "trek",
+            "mountains",
+            "nature",
+            "happy",
+            "scenary",
+            "calm"
+        ],
+        "user": "5ee04a3f36836502ba8415f9"
+    },
+    {
+        "_id": "5ee05e343f306803f5457656",
+        "caption": "momo is life",
+        "tags": [
+            "momo",
+            "dumpling",
+            "happy"
+        ],
+        "user": "5ee04a3f36836502ba8415f9"
+    },
+    {
+        "_id": "5ee05e9ef0c36e041099b15d",
+        "caption": "work work work",
+        "tags": [
+            "office",
+            "coder",
+            "hecticLife"
+        ],
+        "user": "5ee04a3f36836502ba8415fc"
+    },
+    {
+        "_id": "5ee05ed99790510437b5402e",
+        "caption": "GOAL!",
+        "tags": [
+            "futsal",
+            "goal"
+        ],
+        "user": "5ee04a3f36836502ba8415fc"
+    }
+]

@@ -1,39 +1,40 @@
 [
     {
-        "_id": "5edf5e91e6de811664220002",
+        "_id": "5ee04a3f36836502ba8415f8",
         "name": "John Doe",
         "email": "john@gmail.com",
         "password": "123456",
-        "address": "Kathmandu"
+        "address": "Kathmandu",
+        "role": "publisher"
     },
     {
-        "_id": "5edf5eb5f4f87d167d91fe2c",
+        "_id": "5ee04a3f36836502ba8415f9",
         "name": "Jane Doe",
         "email": "jane@gmail.com",
         "password": "123456",
-        "address": "Bhaktapur"
+        "address": "Bhaktapur",
+        "role": "publisher"
     },
     {
-        "_id": "5edf5eeb02045d16969a735d",
+        "_id": "5ee04a3f36836502ba8415fa",
         "name": "Admin Joe",
         "email": "admin@gmail.com",
         "password": "123456",
         "address": "Lalitpur"
     },
     {
-        "_id": "5edf5eeb02045d16969a735d",
+        "_id": "5ee04a3f36836502ba8415fb",
         "name": "Mike Holmes",
         "email": "mike@gmail.com",
         "password": "123456",
         "address": "Baneswor"
     },
     {
-        "_id": "5edf5fdea2f4f61703d2eed1",
+        "_id": "5ee04a3f36836502ba8415fc",
         "name": "Mary Allen",
         "email": "mary@gmail.com",
         "password": "123456",
         "address": "Kalanki",
         "role": "publisher"
     }
-
 ]

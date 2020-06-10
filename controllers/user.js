@@ -43,6 +43,11 @@ exports.updateUser = asyncHandler(
         if (req.user.id !== user._id.toString() && req.user.role !== 'admin') {
             return next(new ErrorResponse(`Not authorized to update this user detail.`, 401));
         }
+        // check if update is trying to change the role which is not permitted
+        if (req.body.role) {
+            return next(new ErrorResponse(`Cannot change user role.`, 401));
+        }
+
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true

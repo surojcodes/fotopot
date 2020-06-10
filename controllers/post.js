@@ -38,6 +38,30 @@ exports.getPost = asyncHandler(
     }
 );
 
+// USE : To Get  post of a user
+// ROUTE: GET /api/v1/posts/user/:userId
+// ACCESS : loggedIn
+exports.getUsersPost = asyncHandler(
+    async (req, res, next) => {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return next(new ErrorResponse(`User with id ${req.params.userId} not found.`, 404));
+        }
+        const posts = await Post.find({ user: req.params.userId }).populate({
+            path: 'user',
+            select: 'name'
+        });
+
+        res.status(200).json({
+            success: true,
+            count: posts.length,
+            data: posts
+        });
+    }
+);
+
+
+
 // USE : To create a new post
 // ROUTE: POST /api/v1/posts
 exports.createPost = asyncHandler(
@@ -109,19 +133,28 @@ exports.uploadImage = asyncHandler(
     }
 );
 
-// USE : To like a post
-// ROUTE: PUT /api/v1/posts/:id/like
-exports.likePost = asyncHandler(
+// USE : To like/unlike a post
+// ROUTE: PUT /api/v1/posts/:id/like and PUT /api/v1/posts/:id/unlike
+exports.likeUnlikePost = asyncHandler(
     async (req, res, next) => {
         const post = await Post.findById(req.params.id);
         if (!post)
             return next(new ErrorResponse(`Post with id ${req.params.id} not found.`, 401));
 
-        const updatedPost = await Post.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user.id } }, {
+        //if no like, add a like
+        let query = '';
+        const options = {
             new: true,
             runValidators: true
         }
-        )
+        if (!post.likes.includes(req.user.id)) {
+            query = Post.findByIdAndUpdate(req.params.id, { $addToSet: { likes: req.user.id } }, options);
+        } else {
+            //if liked, dislike
+            query = Post.findByIdAndUpdate(req.params.id, { $pull: { likes: req.user.id } }, options);
+        }
+        const updatedPost = await query;
+
         res.status(200).json({
             success: true,
             data: updatedPost
