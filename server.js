@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
@@ -13,6 +14,9 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
+const cors = require('cors');
+
+
 
 //routes
 const posts = require('./routes/post');
@@ -42,9 +46,6 @@ app.use('/api/v1/comments', comments);
 
 // cookie parser
 app.use(cookieParser());
-
-// for file upload
-app.use(fileupload());
 
 // sanitize data
 app.use(mongoSanitize());
